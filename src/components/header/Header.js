@@ -9,8 +9,8 @@ const Header = () => {
             <img src="#" alt="logo" className="header__logo-image" />
           </a>
           <div className="header__contacts">
-            <div className="header__phone">88000553535</div>
-            <div className="header__email">email@gmail.com</div>
+            <div className="header__phone">Tel: <span>88000553535</span> </div>
+            <div className="header__email">Email: <span>email@gmail.com</span> </div>
           </div>
         </div>
       </div>
