@@ -3,7 +3,7 @@ import { useParams } from 'react-router-dom';
 import MuseumApi from '../../../service/MuseumApi';
 
 const ArtworkPage = () => {
-  const [artwork, setArtwork] = useState({});
+  const [artwork, setArtwork] = useState(null);
 
   const {artworkId} = useParams();
   const MuseumServiceApi = new MuseumApi();
@@ -12,20 +12,24 @@ const ArtworkPage = () => {
     MuseumServiceApi.getArtwork(artworkId).then(result => setArtwork(result));
   }, []);
 
+  return artwork ? <ArtworkView artworkInfo={artwork}/> : null;
+};
+
+const ArtworkView = ({artworkInfo}) => {
   return (
     <>
-      <h2 className="artwork__subtitle">{artwork.title}</h2>
+      <h2 className="artwork__subtitle">{artworkInfo.title}</h2>
       <div className="artwork__showcase">
         <img
-          src={artwork.primaryImage}
-          alt={artwork.title + ' primary image'}
+          src={artworkInfo.primaryImage}
+          alt={artworkInfo.title + ' primary image'}
           className="artwork__showcase-image" />
       </div>
       <div className="artwork__author">
-        Author: {artwork.artistDisplayName.length > 0 ? artwork.artistDisplayName : 'Unknown'}
+        Author: {artworkInfo.artistDisplayName.length > 0 ? artworkInfo.artistDisplayName : 'Unknown'}
       </div>
-      <div className="artwork__date">Release year: {artwork.objectEndDate}</div>
-      <div className="artwork__culture">Culture: {artwork.culture}</div>
+      <div className="artwork__date">Release year: {artworkInfo.objectEndDate}</div>
+      <div className="artwork__culture">Culture: {artworkInfo.culture}</div>
     </>
   );
 };

@@ -1,0 +1,15 @@
+.search-forms {
+  &__wrapper {
+    padding: 10rem 0 20rem;
+    display: flex;
+    justify-content: space-between;
+  }
+}
+
+.title-form {
+  &__wrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+  }
+}
