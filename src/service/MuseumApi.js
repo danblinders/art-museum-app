@@ -8,7 +8,7 @@ export default class MuseumApi {
   };
 
   getDepartmentCollection = async (departmentId) => {
-    return await this.getResource(`${this.API_BASE}/objects?departmentId=${departmentId}`)
+    return await this.getResource(`${this.API_BASE}/objects?departmentIds=${departmentId}`)
       .then(resource => resource.objectIDs);
   };
 

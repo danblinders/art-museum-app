@@ -27,11 +27,9 @@ const ArtworksCollectionPage = () => {
 
   return (
     <>
-      {artworksToLoad ? <ArtworksList artworksIds={artworksToLoad}/> : 'Nothing was found'}
-      { artworksIds?.length - offset > 20 ?
-        <button className="artworks__button" onClick={() => setOffset(offset + 20)}>Load more</button>
-        :
-        null
+      {artworksToLoad ?
+        <ArtworksList artworksIds={artworksToLoad} changeOffset={setOffset}/> 
+        : 'Nothing was found'
       }
     </>
   );

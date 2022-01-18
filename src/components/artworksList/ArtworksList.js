@@ -2,8 +2,8 @@ import { useEffect, useState } from 'react';
 import MuseumApi from '../../service/MuseumApi';
 import './ArtworksList.scss';
 
-const ArtworksList = ({artworksIds}) => {
-  const [artworks, setAtrworks] = useState([]);
+const ArtworksList = ({artworksIds, changeOffset}) => {
+  const [artworks, setAtrworks] = useState(null);
   const MuseumServiceApi = new MuseumApi();
 
   useEffect(() => {
@@ -11,10 +11,11 @@ const ArtworksList = ({artworksIds}) => {
       return await MuseumServiceApi.getArtwork(artworkId);
     });
 
-    Promise.all(artworksPoromises).then(result => setAtrworks(currentArtworks => [...currentArtworks, ...result]));
+    Promise.all(artworksPoromises)
+      .then(result => setAtrworks(currentArtworks =>
+        currentArtworks ? [...currentArtworks, ...result] : result)
+      );
   }, [artworksIds]);
-
-  console.log(artworks);
 
   const artworkListItems = artworks?.map(artwork => {
     return (
@@ -31,8 +32,15 @@ const ArtworksList = ({artworksIds}) => {
   });
 
   return (
-    <div className="artwork-list">
-      {artworkListItems}
+    <div className="artworks">
+      <div className="artworks__list">
+        {artworkListItems}
+      </div>
+      <button
+        className="department__add-btn"
+        onClick={() => changeOffset(currentOffset => currentOffset + 20)}>
+          Load More
+      </button>
     </div>
   );
 };
