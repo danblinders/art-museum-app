@@ -14,7 +14,15 @@ export default class MuseumApi {
 
   getArtwork = async (artworkId) => await this.getResource(`${this.API_BASE}/objects/${artworkId}`);
 
-  getArtworksWithFilters = async (searchParams) => {
-    return await this.getResource(`${this.API_BASE}/search${searchParams}`).then(resource => resource.objectIDs);
+  getArtworksWithFilters = async (term, filters) => {
+    let queryString = `${this.API_BASE}/search?`;
+    
+    for (const filter in filters) {
+      queryString += `${filter}=${filters[filter]}&`;
+    }
+
+    queryString += `q=${term}`;
+
+    return await this.getResource(queryString).then(resource => resource.objectIDs);
   };
 };

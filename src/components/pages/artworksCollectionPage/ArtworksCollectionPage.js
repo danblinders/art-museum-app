@@ -1,34 +1,36 @@
 import { useEffect, useState } from 'react/cjs/react.development';
-import { useLocation } from 'react-router-dom';
+import { useSearchParams } from 'react-router-dom';
 import MuseumApi from '../../../service/MuseumApi';
-import ArtworksList from '../../artworksList/ArtworksList';
+import ArtworksWithLoad from '../../artworksWithLoad/ArtworksWithLoad';
 
 const ArtworksCollectionPage = () => {
   const [artworksIds, setArtworksIds] = useState(null);
   const [offset, setOffset] = useState(0);
 
-  const searchParams = useLocation().search;
-
   const MuseumServiceApi = new MuseumApi();
 
+  const [searchParams] = useSearchParams();
+
   useEffect(() => {
-    MuseumServiceApi.getArtworksWithFilters(searchParams)
+    const {q: term, ...filters} = Object.fromEntries([...searchParams]);
+
+    MuseumServiceApi.getArtworksWithFilters(term, filters)
       .then(result => setArtworksIds(result));
   }, []);
 
   let artworksToLoad;
 
   if (artworksIds) {
-    artworksToLoad = artworksIds.length - offset > 20 ?
-      artworksIds.slice(offset, offset + 20)
+    artworksIds.length - offset > 20 ?
+      artworksToLoad = artworksIds.slice(offset, offset + 20)
       :
-      artworksIds.slice(offset, artworksIds.length);
+      artworksToLoad = artworksIds.slice(offset, artworksIds.length);
   }
 
   return (
     <>
       {artworksToLoad ?
-        <ArtworksList artworksIds={artworksToLoad} changeOffset={setOffset}/> 
+        <ArtworksWithLoad changeOffset={setOffset} dataIds={artworksToLoad}/>
         : 'Nothing was found'
       }
     </>

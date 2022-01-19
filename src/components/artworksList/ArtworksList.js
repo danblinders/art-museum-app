@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import MuseumApi from '../../service/MuseumApi';
 import './ArtworksList.scss';
 
-const ArtworksList = ({artworksIds, changeOffset}) => {
+const ArtworksList = ({artworksIds}) => {
   const [artworks, setAtrworks] = useState(null);
   const MuseumServiceApi = new MuseumApi();
 
@@ -36,11 +36,6 @@ const ArtworksList = ({artworksIds, changeOffset}) => {
       <div className="artworks__list">
         {artworkListItems}
       </div>
-      <button
-        className="department__add-btn"
-        onClick={() => changeOffset(currentOffset => currentOffset + 20)}>
-          Load More
-      </button>
     </div>
   );
 };
