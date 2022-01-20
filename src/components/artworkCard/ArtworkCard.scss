@@ -1,0 +1,22 @@
+.artwork-card {
+  width: 100%;
+  max-width: 400px;
+  padding: 2rem;
+  border-radius: 2%;
+  cursor: pointer;
+
+  &__wrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem; 
+  }
+
+  &__showcase {
+    max-height: 20rem;
+    display: flex;
+  }
+
+  &__image {
+    max-width: 100%;
+  }
+}
