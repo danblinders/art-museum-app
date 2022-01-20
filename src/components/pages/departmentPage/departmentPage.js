@@ -1,29 +1,22 @@
-import { useEffect, useState } from 'react/cjs/react.development';
 import { useParams } from 'react-router-dom';
+import { useArtworks } from '../../../hooks/useArtworks';
 import MuseumApi from '../../../service/MuseumApi';
-import ArtworksList from '../../artworksList/ArtworksList';
+import ArtworksWithLoad from '../../artworksWithLoad/ArtworksWithLoad';
 
 const DepartmentPage = () => {
-  const [departmentCollectionIds, setDepartmentCollectionIds] = useState(null);
-  const [offset, setOffset] = useState(0);
-  
   const {departmentId} = useParams();
+
   const MuseumServiceApi = new MuseumApi();
 
-  useEffect(() => {
-    MuseumServiceApi.getDepartmentCollection(departmentId)
-      .then(result => setDepartmentCollectionIds(result));
-  }, []);
-
-  const displayedArtworksIds = departmentCollectionIds?.slice(offset, offset + 20);
+  const {artworksToLoad, setOffset} = useArtworks(MuseumServiceApi.getDepartmentCollection, departmentId);
 
   return (
     <>
       <h1>Department {departmentId}</h1>
       <div className="container">
         <div className="department__collection">
-          {displayedArtworksIds ?
-            <ArtworksList artworksIds={displayedArtworksIds} changeOffset={setOffset}/>
+          {artworksToLoad ?
+            <ArtworksWithLoad dataIds={artworksToLoad} changeOffset={setOffset}/>
             : null
           }
         </div>

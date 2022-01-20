@@ -38,7 +38,7 @@ const SearchFormByTitle = () => {
     onSubmit: (values, { resetForm }) => {
       const {term, ...filters} = values;
 
-      let queryString = '/artworks?title=true';
+      let queryString = '/search?title=true';
 
       Object.entries(filters)?.forEach(([key, value]) => queryString += value ? `&${key}=${value}` : '');
 
@@ -131,7 +131,7 @@ const SearchFormByArtist = () => {
       return errors;
     },
     onSubmit: (values, { resetForm }) => {
-      let queryString = `/artworks?artistOrCulture=true&q=${values.term}`;
+      let queryString = `/search?artistOrCulture=true&q=${values.term}`;
       resetForm();
       navigate(queryString);
     }
