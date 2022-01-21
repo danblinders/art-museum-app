@@ -10,27 +10,25 @@ const DepartmentsList = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const fetchDepartmentData = async () => {
-      const
-        MuseumServiceApi = new MuseumApi(),
-        ImageServiceApi = new ImageApi();
+    const
+      MuseumServiceApi = new MuseumApi(),
+      ImageServiceApi = new ImageApi();
 
-      let departmentsList = await MuseumServiceApi.getDepartments();
-      
-      const modifieDdepartmentsListPromises = departmentsList.map(async department => {
-        const departmentImageURL = await ImageServiceApi.getPhoto(department.displayName);
+    MuseumServiceApi.getDepartments()
+      .then(result => {
+        const resultWithImages = result.map(async department => {
+          const departmentImageURL = await ImageServiceApi.getPhoto(department.displayName);
+  
+          const newDepartment = {...department, departmentImageURL};
+  
+          return newDepartment;
+        });
 
-        const newDepartment = {...department, departmentImageURL};
-
-        return newDepartment;
+        return Promise.all(resultWithImages);
+      })
+      .then(departmentsList => {
+        setDepartments(departmentsList);
       });
-
-      departmentsList = await Promise.all(modifieDdepartmentsListPromises);
-
-      return departmentsList;
-    };
-
-    fetchDepartmentData().then(result => setDepartments(result));
   }, []);
 
   const departmentsElems = departments?.map(department => {
