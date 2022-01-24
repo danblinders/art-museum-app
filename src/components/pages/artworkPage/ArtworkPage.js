@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react/cjs/react.development';
 import { useParams } from 'react-router-dom';
 import MuseumApi from '../../../service/MuseumApi';
+import ErrorBoundary from '../../errorBoundary/ErrorBoundary';
 
 const ArtworkPage = () => {
   const [artwork, setArtwork] = useState(null);
@@ -17,7 +18,7 @@ const ArtworkPage = () => {
 
 const ArtworkView = ({artworkInfo}) => {
   return (
-    <>
+    <ErrorBoundary>
       <h2 className="artwork__subtitle">{artworkInfo.title}</h2>
       <div className="artwork__showcase">
         <img
@@ -30,7 +31,7 @@ const ArtworkView = ({artworkInfo}) => {
       </div>
       <div className="artwork__date">Release year: {artworkInfo.objectEndDate}</div>
       <div className="artwork__culture">Culture: {artworkInfo.culture}</div>
-    </>
+    </ErrorBoundary>
   );
 };
 

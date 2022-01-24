@@ -2,22 +2,34 @@ import { useParams } from 'react-router-dom';
 import { useArtworks } from '../../../hooks/useArtworks';
 import MuseumApi from '../../../service/MuseumApi';
 import ArtworksWithLoad from '../../artworksWithLoad/ArtworksWithLoad';
+import Spinner from '../../spinner/Spinner';
 
 const DepartmentPage = () => {
   const {departmentId} = useParams();
 
   const MuseumServiceApi = new MuseumApi();
 
-  const {artworksToLoad, setOffset} = useArtworks(MuseumServiceApi.getDepartmentCollection, departmentId);
+  const {
+    isLoading,
+    artworksToLoad,
+    noFutureArtworksToLoad,
+    increaseOffset
+  } = useArtworks(MuseumServiceApi.getDepartmentCollection, departmentId);
 
   return (
     <>
       <h1>Department {departmentId}</h1>
       <div className="container">
         <div className="department__collection">
-          {artworksToLoad ?
-            <ArtworksWithLoad dataIds={artworksToLoad} changeOffset={setOffset}/>
-            : null
+          {
+            isLoading ?
+              <Spinner/>
+              : artworksToLoad ?
+                <ArtworksWithLoad
+                  dataIds={artworksToLoad}
+                  changeOffset={increaseOffset}
+                  noFutureArtworksToLoad={noFutureArtworksToLoad}/>
+                : 'SomeThing went wrong'
           }
         </div>
       </div>

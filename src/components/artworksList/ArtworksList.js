@@ -1,16 +1,24 @@
 import { useEffect, useState } from 'react';
 import MuseumApi from '../../service/MuseumApi';
 import ArtworkCard from '../artworkCard/ArtworkCard';
+import fallbackThumbnail from './no-image.png';
 import './ArtworksList.scss';
 
 const ArtworksList = ({artworksIds}) => {
   const [artworks, setAtrworks] = useState(null);
 
   const MuseumServiceApi = new MuseumApi();
-
+  
   useEffect(() => {
     const artworksPoromises = artworksIds.map(async artworkId => {
-      return await MuseumServiceApi.getArtwork(artworkId);
+      return await MuseumServiceApi.getArtwork(artworkId)
+        .then(artwork => {
+          if (artwork.primaryImage.length === 0) {
+            artwork.primaryImage = fallbackThumbnail;
+          }
+          return artwork;
+        })
+        .then(artwork => <ArtworkCard key={artwork.objectID} artworkData={artwork}/>);
     });
 
     Promise.all(artworksPoromises)
@@ -19,14 +27,10 @@ const ArtworksList = ({artworksIds}) => {
       );
   }, [artworksIds]);
 
-  const artworkListCards = artworks?.map(artwork => {
-    return <ArtworkCard key={artwork.objectID} artworkData={artwork}/>;
-  });
-
   return (
     <div className="artworks">
       <div className="artworks__list">
-        {artworkListCards}
+        {artworks}
       </div>
     </div>
   );

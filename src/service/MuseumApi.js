@@ -1,10 +1,16 @@
 export default class MuseumApi {
   API_BASE = 'https://collectionapi.metmuseum.org/public/collection/v1';
 
-  getResource = async (url) => await fetch(url).then(response => response.json());
+  getResource = async (url) => await fetch(url).then(response => {
+    if (response.ok) {
+      return response.json();
+    } else {
+      throw Error ('Issues loading resource');
+    }
+  });
 
   getDepartments = async () => {
-    return await this.getResource(`${this.API_BASE}/departments`).then(resource => resource.departments);
+    return await this.getResource(`${this.API_BASE}/department`).then(resource => resource.departments);
   };
 
   getDepartmentCollection = async (departmentId) => {

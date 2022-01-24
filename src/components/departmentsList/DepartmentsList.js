@@ -1,11 +1,15 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useReducer } from 'react';
 import { useNavigate } from 'react-router-dom';
 import MuseumApi from '../../service/MuseumApi';
 import ImageApi from '../../service/ImageApi';
+import Spinner from '../spinner/Spinner';
 import './DepartmentsList.scss';
 
 const DepartmentsList = () => {
-  const [departments, setDepartments] = useState(null);
+  const [state, setState] = useReducer(
+    (oldState, newState) => ({...oldState, ...newState}),
+    {isLoading: true, departments: null}
+  );
 
   const navigate = useNavigate();
 
@@ -27,11 +31,15 @@ const DepartmentsList = () => {
         return Promise.all(resultWithImages);
       })
       .then(departmentsList => {
-        setDepartments(departmentsList);
+        setState({isLoading: false, departments: departmentsList});
+      })
+      .catch(e => {
+        setState({isLoading: false});
+        console.log(e);
       });
   }, []);
 
-  const departmentsElems = departments?.map(department => {
+  const departmentsElems = state.departments?.map(department => {
     return (
       <div
         key={department.departmentId}
@@ -47,9 +55,13 @@ const DepartmentsList = () => {
     <section className="departments">
       <div className="container">
         <h2 className="subtitle departments__subtitle">Our departments</h2>
-        <div className="departments__group">
-          {departmentsElems}
-        </div>
+        {state.isLoading ?
+          <Spinner/>
+          :
+          <div className="departments__group">
+            {departmentsElems}
+          </div>
+        }
       </div>
     </section>
   );

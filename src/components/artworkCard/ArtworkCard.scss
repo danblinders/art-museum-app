@@ -12,11 +12,12 @@
   }
 
   &__showcase {
-    max-height: 20rem;
+    height: 20rem;
     display: flex;
+    justify-content: center;
   }
 
   &__image {
-    max-width: 100%;
+    width: 100%;
   }
 }
