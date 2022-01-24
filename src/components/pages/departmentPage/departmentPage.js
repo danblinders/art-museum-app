@@ -1,5 +1,5 @@
 import { useParams } from 'react-router-dom';
-import { useArtworks } from '../../../hooks/useArtworks';
+import { useMuseumData } from '../../../hooks/useMuseumData';
 import MuseumApi from '../../../service/MuseumApi';
 import ArtworksWithLoad from '../../artworksWithLoad/ArtworksWithLoad';
 import Spinner from '../../spinner/Spinner';
@@ -11,10 +11,11 @@ const DepartmentPage = () => {
 
   const {
     isLoading,
-    artworksToLoad,
-    noFutureArtworksToLoad,
+    isError,
+    dataToLoad,
+    noFutureDataToLoad,
     increaseOffset
-  } = useArtworks(MuseumServiceApi.getDepartmentCollection, departmentId);
+  } = useMuseumData(MuseumServiceApi.getDepartmentCollection, departmentId);
 
   return (
     <>
@@ -24,11 +25,11 @@ const DepartmentPage = () => {
           {
             isLoading ?
               <Spinner/>
-              : artworksToLoad ?
+              : dataToLoad ?
                 <ArtworksWithLoad
-                  dataIds={artworksToLoad}
+                  dataIds={dataToLoad}
                   changeOffset={increaseOffset}
-                  noFutureArtworksToLoad={noFutureArtworksToLoad}/>
+                  noFutureArtworksToLoad={noFutureDataToLoad}/>
                 : 'SomeThing went wrong'
           }
         </div>

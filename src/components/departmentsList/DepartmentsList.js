@@ -1,45 +1,44 @@
-import { useEffect, useReducer } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useMuseumData } from '../../hooks/useMuseumData';
 import MuseumApi from '../../service/MuseumApi';
 import ImageApi from '../../service/ImageApi';
 import Spinner from '../spinner/Spinner';
 import './DepartmentsList.scss';
 
 const DepartmentsList = () => {
-  const [state, setState] = useReducer(
-    (oldState, newState) => ({...oldState, ...newState}),
-    {isLoading: true, departments: null}
-  );
+  const [departments, setDepartments] = useState(null);
 
   const navigate = useNavigate();
 
+  const
+    MuseumServiceApi = new MuseumApi(),
+    ImageServiceApi = new ImageApi();
+
+  const {
+    isLoading,
+    isError,
+    dataToLoad,
+    noFutureDataToLoad,
+    increaseOffset
+  } = useMuseumData(MuseumServiceApi.getDepartments);
+
   useEffect(() => {
-    const
-      MuseumServiceApi = new MuseumApi(),
-      ImageServiceApi = new ImageApi();
-
-    MuseumServiceApi.getDepartments()
-      .then(result => {
-        const resultWithImages = result.map(async department => {
-          const departmentImageURL = await ImageServiceApi.getPhoto(department.displayName);
+    if (dataToLoad) {
+      const dataWithImages = dataToLoad.map(async department => {
+        const departmentImageURL = await ImageServiceApi.getPhoto(department.displayName);
   
-          const newDepartment = {...department, departmentImageURL};
+        const newDepartment = {...department, departmentImageURL};
   
-          return newDepartment;
-        });
-
-        return Promise.all(resultWithImages);
-      })
-      .then(departmentsList => {
-        setState({isLoading: false, departments: departmentsList});
-      })
-      .catch(e => {
-        setState({isLoading: false});
-        console.log(e);
+        return newDepartment;
       });
-  }, []);
+  
+      Promise.all(dataWithImages)
+        .then(departmentsList => setDepartments(departmentsList));
+    }
+  }, [dataToLoad]);
 
-  const departmentsElems = state.departments?.map(department => {
+  const departmentsElems = departments?.map(department => {
     return (
       <div
         key={department.departmentId}
@@ -55,7 +54,7 @@ const DepartmentsList = () => {
     <section className="departments">
       <div className="container">
         <h2 className="subtitle departments__subtitle">Our departments</h2>
-        {state.isLoading ?
+        {isLoading ?
           <Spinner/>
           :
           <div className="departments__group">

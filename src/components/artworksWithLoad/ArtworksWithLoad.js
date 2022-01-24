@@ -10,8 +10,8 @@ const ArtworksWithLoad = ({changeOffset, dataIds, noFutureArtworksToLoad}) => {
   );
   return (
     <ErrorBoundary>
-      <div className="artworks">
-        <div className="artworks__list" onLoad={() => setBtnState({isShown: true, isDisabled: false})}>
+      <div className="artworks" onLoad={() => setBtnState({isShown: true, isDisabled: false})}>
+        <div className="artworks__list">
           <ArtworksList artworksIds={dataIds}/>
         </div>
         {

@@ -10,7 +10,7 @@ export default class MuseumApi {
   });
 
   getDepartments = async () => {
-    return await this.getResource(`${this.API_BASE}/department`).then(resource => resource.departments);
+    return await this.getResource(`${this.API_BASE}/departments`).then(resource => resource.departments);
   };
 
   getDepartmentCollection = async (departmentId) => {
