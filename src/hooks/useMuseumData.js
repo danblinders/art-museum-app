@@ -1,6 +1,6 @@
-import { useReducer, useEffect } from 'react';
+import { useReducer, useEffect, useMemo } from 'react';
 
-const useMuseumData = (fetchFunc, ...fetchFuncArgs) => {
+const useMuseumData = (offsetStep, fetchFunc, ...fetchFuncArgs) => {
   const [state, setState] = useReducer(
     (prevState, newState) => ({...prevState, ...newState}),
     {isLoading: true, isError: false, dataIds: null, offset: 0}
@@ -14,12 +14,10 @@ const useMuseumData = (fetchFunc, ...fetchFuncArgs) => {
 
   const
     {dataIds, isLoading, isError, offset} = state,
-    dataToLoad = dataIds?.slice(offset, offset + 20),
-    noFutureDataToLoad = dataIds?.length - offset < 20 ? true : false;
+    dataToLoad = useMemo(() => dataIds?.slice(offset, offset + offsetStep), [dataIds, offset]) ,
+    noFutureDataToLoad = dataIds?.length - offset < offsetStep ? true : false;
 
-  const increaseOffset = (value) => {
-    setState({offset: offset + value});
-  };
+  const increaseOffset = () => setState({offset: offset + offsetStep});
 
   return {isLoading, isError, dataToLoad, noFutureDataToLoad, increaseOffset};
 };

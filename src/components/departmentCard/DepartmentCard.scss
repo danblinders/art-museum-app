@@ -1,0 +1,21 @@
+.departments-card {
+  flex: 1 1 100%;
+  padding: 2%;
+  max-width: 20%;
+  min-width: 25rem;
+  min-height: 35rem;
+  border-radius: 5%;
+  display: flex;
+  justify-content: center;
+  align-items: center; 
+  color: #fff;
+  background-blend-mode: overlay;
+  cursor: pointer;
+  transition: 0.5s all;
+
+  &__name {
+    font-size: 3rem;
+    font-weight: 700;
+    text-align: center;
+  }
+}

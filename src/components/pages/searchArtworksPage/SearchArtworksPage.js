@@ -1,8 +1,11 @@
+import { useCallback } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { useMuseumData } from '../../../hooks/useMuseumData';
 import MuseumApi from '../../../service/MuseumApi';
-import ArtworksWithLoad from '../../artworksWithLoad/ArtworksWithLoad';
+import DataList from '../../dataList/DataList';
+import ArtworkCard from '../../artworkCard/ArtworkCard';
 import Spinner from '../../spinner/Spinner';
+import fallbackThumbnail from '../../../img/no-image.png';
 
 const SearchArtworksPage = () => {
   const MuseumServiceApi = new MuseumApi();
@@ -14,21 +17,38 @@ const SearchArtworksPage = () => {
     isLoading,
     isError,
     dataToLoad,
-    noFutureDataToLoad,
+    noFutureDataToLoad : noFutureArtworksToLoad,
     increaseOffset
-  } = useMuseumData(MuseumServiceApi.getArtworksWithFilters, term, filters);
+  } = useMuseumData(20, MuseumServiceApi.getArtworksWithFilters, term, filters);
 
+  const modifyArtworksObjects = useCallback(async (artworksIds) => {
+    const artworksPoromises = artworksIds.map(async artworkId => {
+      return await MuseumServiceApi.getArtwork(artworkId)
+        .then(artwork => {
+          if (artwork.primaryImage.length === 0) {
+            artwork.primaryImage = fallbackThumbnail;
+          }
+          return <ArtworkCard key={artwork.objectID} artworkData={artwork}/>;
+        });
+    });
+
+    return await Promise.all(artworksPoromises);
+  }, []);
+  
   return (
     <>
       {
         isLoading ?
           <Spinner/>
-          :dataToLoad ?
-            <ArtworksWithLoad
+          : dataToLoad ?
+            <DataList
               dataIds={dataToLoad}
               changeOffset={increaseOffset}
-              noFutureArtworksToLoad={noFutureDataToLoad}/>
-            : 'Nothing was found'
+              noFutureDataToLoad={noFutureArtworksToLoad}
+              transformation={[modifyArtworksObjects]}
+            />
+            :
+            'Nothing was found'
       }
     </>
   );

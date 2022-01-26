@@ -1,8 +1,11 @@
+import { useCallback } from 'react';
 import { useParams } from 'react-router-dom';
 import { useMuseumData } from '../../../hooks/useMuseumData';
 import MuseumApi from '../../../service/MuseumApi';
-import ArtworksWithLoad from '../../artworksWithLoad/ArtworksWithLoad';
+import DataList from '../../dataList/DataList';
+import ArtworkCard from '../../artworkCard/ArtworkCard';
 import Spinner from '../../spinner/Spinner';
+import fallbackThumbnail from '../../../img/no-image.png';
 
 const DepartmentPage = () => {
   const {departmentId} = useParams();
@@ -13,9 +16,23 @@ const DepartmentPage = () => {
     isLoading,
     isError,
     dataToLoad,
-    noFutureDataToLoad,
+    noFutureDataToLoad : noFutureArtworksToLoad,
     increaseOffset
-  } = useMuseumData(MuseumServiceApi.getDepartmentCollection, departmentId);
+  } = useMuseumData(20, MuseumServiceApi.getDepartmentCollection, departmentId);
+
+  const modifyArtworksObjects = useCallback(async (artworksIds) => {
+    const artworksPoromises = artworksIds.map(async artworkId => {
+      return await MuseumServiceApi.getArtwork(artworkId)
+        .then(artwork => {
+          if (artwork.primaryImage.length === 0) {
+            artwork.primaryImage = fallbackThumbnail;
+          }
+          return <ArtworkCard key={artwork.objectID} artworkData={artwork}/>;
+        });
+    });
+
+    return await Promise.all(artworksPoromises);
+  }, []);
 
   return (
     <>
@@ -25,12 +42,16 @@ const DepartmentPage = () => {
           {
             isLoading ?
               <Spinner/>
-              : dataToLoad ?
-                <ArtworksWithLoad
+              :
+              dataToLoad ?
+                <DataList
                   dataIds={dataToLoad}
                   changeOffset={increaseOffset}
-                  noFutureArtworksToLoad={noFutureDataToLoad}/>
-                : 'SomeThing went wrong'
+                  noFutureDataToLoad={noFutureArtworksToLoad}
+                  transformation={[modifyArtworksObjects]}
+                />
+                :
+                'Nothing was found'
           }
         </div>
       </div>
