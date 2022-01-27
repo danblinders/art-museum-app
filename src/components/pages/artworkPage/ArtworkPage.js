@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react/cjs/react.development';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import MuseumApi from '../../../service/MuseumApi';
 import ErrorBoundary from '../../errorBoundary/ErrorBoundary';
 
@@ -17,8 +17,10 @@ const ArtworkPage = () => {
 };
 
 const ArtworkView = ({artworkInfo}) => {
+  const navigate = useNavigate();
   return (
     <ErrorBoundary>
+      <button className="artwork__back-btn" onClick={() => navigate(-1)}>Go Back</button>
       <h2 className="artwork__subtitle">{artworkInfo.title}</h2>
       <div className="artwork__showcase">
         <img

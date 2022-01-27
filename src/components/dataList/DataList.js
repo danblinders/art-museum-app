@@ -3,30 +3,21 @@ import ErrorBoundary from '../errorBoundary/ErrorBoundary';
 import './DataList.scss';
 
 const DataList = ({
-  dataIds,
-  changeOffset,
+  offset,
+  offsetStep,
+  loadingState,
+  loadMoreData,
+  data,
   noFutureDataToLoad,
-  transformation: [transformFunc, ...transformFuncArgs]
 }) => {
-  const [dataList, setDataList] = useState(null);
   
   const buttonRef = useRef();
-  
-  useEffect(() => {
-    transformFunc(dataIds, ...transformFuncArgs)
-      .then(result => {
-        if (buttonRef.current) {
-          buttonRef.current.disabled = false;
-        }
-        setDataList(currentData => currentData ? [...currentData, ...result] : result);
-      });
-  }, [dataIds, transformFunc]);
 
   return (
     <ErrorBoundary>
       <div className="data__wrapper">
         <div className="data__list">
-          {dataList}
+          {data}
         </div>
         {
           noFutureDataToLoad ?
@@ -34,10 +25,10 @@ const DataList = ({
             :
             <button
               ref={buttonRef}
-              className={`data__load-btn btn ${!dataList ? 'btn_hidden' : ''}`}
+              disabled={loadingState ? true : false}
+              className={`data__load-btn btn ${!data ? 'btn_hidden' : ''}`}
               onClick={() => {
-                buttonRef.current.disabled = true;
-                changeOffset();
+                loadMoreData({isLoading: true, offset: offset + offsetStep});
               }}>
               Load More
             </button>

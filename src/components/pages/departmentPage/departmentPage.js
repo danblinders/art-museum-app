@@ -1,4 +1,4 @@
-import { useCallback } from 'react';
+import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { useMuseumData } from '../../../hooks/useMuseumData';
 import MuseumApi from '../../../service/MuseumApi';
@@ -7,7 +7,11 @@ import ArtworkCard from '../../artworkCard/ArtworkCard';
 import Spinner from '../../spinner/Spinner';
 import fallbackThumbnail from '../../../img/no-image.png';
 
+const offsetStep = 20;
+
 const DepartmentPage = () => {
+  const [departmentCollection, setDepartmentCollection] = useState(null);
+
   const {departmentId} = useParams();
 
   const MuseumServiceApi = new MuseumApi();
@@ -16,23 +20,31 @@ const DepartmentPage = () => {
     isLoading,
     isError,
     dataToLoad,
+    offset,
     noFutureDataToLoad : noFutureArtworksToLoad,
-    increaseOffset
-  } = useMuseumData(20, MuseumServiceApi.getDepartmentCollection, departmentId);
+    setMuseumDataState
+  } = useMuseumData(offsetStep, MuseumServiceApi.getDepartmentCollection, departmentId);
 
-  const modifyArtworksObjects = useCallback(async (artworksIds) => {
-    const artworksPoromises = artworksIds.map(async artworkId => {
-      return await MuseumServiceApi.getArtwork(artworkId)
-        .then(artwork => {
-          if (artwork.primaryImage.length === 0) {
-            artwork.primaryImage = fallbackThumbnail;
-          }
-          return <ArtworkCard key={artwork.objectID} artworkData={artwork}/>;
+  useEffect(() => {
+    if (dataToLoad) {
+      const artworksPoromises = dataToLoad.map(async artworkId => {
+        return await MuseumServiceApi.getArtwork(artworkId)
+          .then(artwork => {
+            if (artwork.primaryImage.length === 0) {
+              artwork.primaryImage = fallbackThumbnail;
+            }
+            return <ArtworkCard key={artwork.objectID} artworkData={artwork}/>;
+          });
+      });
+  
+      Promise.all(artworksPoromises)
+        .then(artworks => {
+          setMuseumDataState({isLoading: false});
+          setDepartmentCollection(currentCollection =>
+            currentCollection ? [...currentCollection, ...artworks] : artworks);
         });
-    });
-
-    return await Promise.all(artworksPoromises);
-  }, []);
+    }
+  }, [dataToLoad]);
 
   return (
     <>
@@ -40,18 +52,17 @@ const DepartmentPage = () => {
       <div className="container">
         <div className="department__collection">
           {
-            isLoading ?
+            isLoading && !departmentCollection ?
               <Spinner/>
               :
-              dataToLoad ?
-                <DataList
-                  dataIds={dataToLoad}
-                  changeOffset={increaseOffset}
-                  noFutureDataToLoad={noFutureArtworksToLoad}
-                  transformation={[modifyArtworksObjects]}
-                />
-                :
-                'Nothing was found'
+              <DataList
+                offset={offset}
+                offsetStep={offsetStep}
+                loadingState={isLoading}
+                loadMoreData={setMuseumDataState}
+                data={departmentCollection}
+                noFutureDataToLoad={noFutureArtworksToLoad}
+              />
           }
         </div>
       </div>

@@ -1,4 +1,4 @@
-import { useCallback } from 'react';
+import { useEffect, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { useMuseumData } from '../../../hooks/useMuseumData';
 import MuseumApi from '../../../service/MuseumApi';
@@ -7,7 +7,11 @@ import ArtworkCard from '../../artworkCard/ArtworkCard';
 import Spinner from '../../spinner/Spinner';
 import fallbackThumbnail from '../../../img/no-image.png';
 
+const offsetStep = 20;
+
 const SearchArtworksPage = () => {
+  const [artworks, setArtworks] = useState(null);
+
   const MuseumServiceApi = new MuseumApi();
 
   const [searchParams] = useSearchParams();
@@ -17,38 +21,45 @@ const SearchArtworksPage = () => {
     isLoading,
     isError,
     dataToLoad,
+    offset,
     noFutureDataToLoad : noFutureArtworksToLoad,
-    increaseOffset
-  } = useMuseumData(20, MuseumServiceApi.getArtworksWithFilters, term, filters);
+    setMuseumDataState
+  } = useMuseumData(offsetStep, MuseumServiceApi.getArtworksWithFilters, term, filters);
 
-  const modifyArtworksObjects = useCallback(async (artworksIds) => {
-    const artworksPoromises = artworksIds.map(async artworkId => {
-      return await MuseumServiceApi.getArtwork(artworkId)
-        .then(artwork => {
-          if (artwork.primaryImage.length === 0) {
-            artwork.primaryImage = fallbackThumbnail;
-          }
-          return <ArtworkCard key={artwork.objectID} artworkData={artwork}/>;
-        });
-    });
-
-    return await Promise.all(artworksPoromises);
-  }, []);
+  useEffect(() => {
+    if (dataToLoad) {
+      const artworksPoromises = dataToLoad.map(async artworkId => {
+        return await MuseumServiceApi.getArtwork(artworkId)
+          .then(artwork => {
+            if (artwork.primaryImage.length === 0) {
+              artwork.primaryImage = fallbackThumbnail;
+            }
+            return <ArtworkCard key={artwork.objectID} artworkData={artwork}/>;
+          });
+      });
   
+      Promise.all(artworksPoromises)
+        .then(artworks => {
+          setMuseumDataState({isLoading: false});
+          setArtworks(currentArtworks => currentArtworks ? [...currentArtworks, ...artworks] : artworks);
+        });
+    }
+  }, [dataToLoad]);
+
   return (
     <>
       {
-        isLoading ?
+        isLoading && !artworks ?
           <Spinner/>
-          : dataToLoad ?
-            <DataList
-              dataIds={dataToLoad}
-              changeOffset={increaseOffset}
-              noFutureDataToLoad={noFutureArtworksToLoad}
-              transformation={[modifyArtworksObjects]}
-            />
-            :
-            'Nothing was found'
+          :
+          <DataList
+            offset={offset}
+            offsetStep={offsetStep}
+            loadingState={isLoading}
+            loadMoreData={setMuseumDataState}
+            data={artworks}
+            noFutureDataToLoad={noFutureArtworksToLoad}
+          />
       }
     </>
   );

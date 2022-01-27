@@ -1,4 +1,4 @@
-import { useCallback } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useMuseumData } from '../../hooks/useMuseumData';
 import MuseumApi from '../../service/MuseumApi';
 import ImageApi from '../../service/ImageApi';
@@ -7,7 +7,11 @@ import DataList from '../dataList/DataList';
 import DepartmentCard from '../departmentCard/DepartmentCard';
 import './DepartmentsSection.scss';
 
+const offsetStep = 6;
+
 const DepartmentsSection = () => {
+  const [departments, setDepartments] = useState(null);
+
   const MuseumServiceApi = new MuseumApi();
 
   const addDepartmentsImages = useCallback(async (departmentsIds) => {
@@ -27,24 +31,50 @@ const DepartmentsSection = () => {
   const {
     isLoading,
     isError,
+    offset,
     dataToLoad,
     noFutureDataToLoad : noFutureDepartmentsToLoad,
-    increaseOffset
-  } = useMuseumData(6, MuseumServiceApi.getDepartments);
+    setMuseumDataState
+  } = useMuseumData(offsetStep, MuseumServiceApi.getDepartments);
+
+  useEffect(() => {
+    if (dataToLoad) {
+      const ImageServiceApi = new ImageApi();
+
+      const departmentsPoromises = dataToLoad.map(async department => {
+        return await ImageServiceApi.getPhoto(department.displayName)
+          .then(departmentImageURL => {
+            setMuseumDataState({isLoading: false});
+            const departmentWithImage = {...department, departmentImageURL};
+            return <DepartmentCard key={department.departmentId} departmentInfo={departmentWithImage}/>;
+          });
+      });
+  
+      Promise.all(departmentsPoromises)
+        .then(departments => {
+          setMuseumDataState({isLoading: false});
+          setDepartments(currentDepartments =>
+            currentDepartments ? [currentDepartments, ...departments] : departments);
+        });
+    }
+  }, [dataToLoad]);
 
   return (
     <section className="departments">
       <div className="container">
         <h2 className="subtitle departments__subtitle">Our departments</h2>
-        {isLoading ?
-          <Spinner/>
-          :
-          <DataList
-            dataIds={dataToLoad}
-            changeOffset={increaseOffset}
-            noFutureDataToLoad={noFutureDepartmentsToLoad}
-            transformation={[addDepartmentsImages]}
-          />
+        {
+          isLoading && !departments ?
+            <Spinner/>
+            :
+            <DataList
+              offset={offset}
+              offsetStep={offsetStep}
+              loadingState={isLoading}
+              loadMoreData={setMuseumDataState}
+              data={departments}
+              noFutureDataToLoad={noFutureDepartmentsToLoad}
+            />
         }
       </div>
     </section>
