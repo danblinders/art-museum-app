@@ -29,6 +29,6 @@ export default class MuseumApi {
 
     queryString += `q=${term}`;
 
-    return await this.getResource(queryString).then(resource => resource.objectIDs);
+    return await this.getResource(queryString).then(resource => resource.objectIDs ? resource.objectIDs : []);
   };
 };

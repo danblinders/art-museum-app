@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef } from 'react';
+import { useRef } from 'react';
 import ErrorBoundary from '../errorBoundary/ErrorBoundary';
 import './DataList.scss';
 
@@ -12,13 +12,16 @@ const DataList = ({
 }) => {
   
   const buttonRef = useRef();
-
+  
   return (
     <ErrorBoundary>
       <div className="data__wrapper">
-        <div className="data__list">
-          {data}
-        </div>
+        {
+          data.length > 0 ?
+            <div className="data__list">{data}</div>
+            :
+            'Nothing was found'
+        }
         {
           noFutureDataToLoad ?
             null

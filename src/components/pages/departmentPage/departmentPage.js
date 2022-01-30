@@ -1,6 +1,8 @@
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { useMuseumData } from '../../../hooks/useMuseumData';
+import usePersistedData from '../../../hooks/usePersistedData';
+import useEffectAfterMount from '../../../hooks/useEffectAfterMount';
 import MuseumApi from '../../../service/MuseumApi';
 import DataList from '../../dataList/DataList';
 import ArtworkCard from '../../artworkCard/ArtworkCard';
@@ -10,9 +12,9 @@ import fallbackThumbnail from '../../../img/no-image.png';
 const offsetStep = 20;
 
 const DepartmentPage = () => {
-  const [departmentCollection, setDepartmentCollection] = useState(null);
-
   const {departmentId} = useParams();
+
+  const [departmentCollection, setDepartmentCollection] = usePersistedData(`department_${departmentId}`);
 
   const MuseumServiceApi = new MuseumApi();
 
@@ -25,7 +27,7 @@ const DepartmentPage = () => {
     setMuseumDataState
   } = useMuseumData(offsetStep, MuseumServiceApi.getDepartmentCollection, departmentId);
 
-  useEffect(() => {
+  const modifyDepartmentCollectionObjects = () => {
     if (dataToLoad) {
       const artworksPoromises = dataToLoad.map(async artworkId => {
         return await MuseumServiceApi.getArtwork(artworkId)
@@ -33,18 +35,25 @@ const DepartmentPage = () => {
             if (artwork.primaryImage.length === 0) {
               artwork.primaryImage = fallbackThumbnail;
             }
-            return <ArtworkCard key={artwork.objectID} artworkData={artwork}/>;
+            return artwork;
           });
       });
   
       Promise.all(artworksPoromises)
         .then(artworks => {
-          setMuseumDataState({isLoading: false});
           setDepartmentCollection(currentCollection =>
-            currentCollection ? [...currentCollection, ...artworks] : artworks);
+            currentCollection ? [...currentCollection, ...artworks] : artworks
+          );
+          setMuseumDataState({isLoading: false});
         });
     }
-  }, [dataToLoad]);
+  };
+
+  useEffectAfterMount(modifyDepartmentCollectionObjects, [dataToLoad]);
+
+  const departmentCollectionElems = departmentCollection?.map(artwork =>
+    <ArtworkCard key={artwork.objectID} artworkData={artwork}/>
+  );
 
   return (
     <>
@@ -60,7 +69,7 @@ const DepartmentPage = () => {
                 offsetStep={offsetStep}
                 loadingState={isLoading}
                 loadMoreData={setMuseumDataState}
-                data={departmentCollection}
+                data={departmentCollectionElems}
                 noFutureDataToLoad={noFutureArtworksToLoad}
               />
           }

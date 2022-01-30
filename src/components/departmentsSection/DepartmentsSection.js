@@ -1,5 +1,7 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { useMuseumData } from '../../hooks/useMuseumData';
+import usePersistedData from '../../hooks/usePersistedData';
+import useEffectAfterMount from '../../hooks/useEffectAfterMount';
 import MuseumApi from '../../service/MuseumApi';
 import ImageApi from '../../service/ImageApi';
 import Spinner from '../spinner/Spinner';
@@ -10,23 +12,9 @@ import './DepartmentsSection.scss';
 const offsetStep = 6;
 
 const DepartmentsSection = () => {
-  const [departments, setDepartments] = useState(null);
+  const [departments, setDepartments] = usePersistedData('departments');
 
   const MuseumServiceApi = new MuseumApi();
-
-  const addDepartmentsImages = useCallback(async (departmentsIds) => {
-    const ImageServiceApi = new ImageApi();
-
-    const departmentsPoromises = departmentsIds.map(async department => {
-      return await ImageServiceApi.getPhoto(department.displayName)
-        .then(departmentImageURL => {
-          const departmentWithImage = {...department, departmentImageURL};
-          return <DepartmentCard key={department.departmentId} departmentInfo={departmentWithImage}/>;
-        });
-    });
-
-    return await Promise.all(departmentsPoromises);
-  }, []);
 
   const {
     isLoading,
@@ -37,27 +25,30 @@ const DepartmentsSection = () => {
     setMuseumDataState
   } = useMuseumData(offsetStep, MuseumServiceApi.getDepartments);
 
-  useEffect(() => {
+  const addDepartmentsImages = () => {
     if (dataToLoad) {
       const ImageServiceApi = new ImageApi();
 
       const departmentsPoromises = dataToLoad.map(async department => {
         return await ImageServiceApi.getPhoto(department.displayName)
-          .then(departmentImageURL => {
-            setMuseumDataState({isLoading: false});
-            const departmentWithImage = {...department, departmentImageURL};
-            return <DepartmentCard key={department.departmentId} departmentInfo={departmentWithImage}/>;
-          });
+          .then(departmentImageURL => ({...department, departmentImageURL}) );
       });
   
       Promise.all(departmentsPoromises)
         .then(departments => {
-          setMuseumDataState({isLoading: false});
           setDepartments(currentDepartments =>
-            currentDepartments ? [currentDepartments, ...departments] : departments);
+            currentDepartments ? [...currentDepartments, ...departments] : departments
+          );
+          setMuseumDataState({isLoading: false});
         });
     }
-  }, [dataToLoad]);
+  };
+
+  useEffectAfterMount(addDepartmentsImages, [dataToLoad]);
+
+  const departmentsElems = departments?.map(department =>
+    <DepartmentCard key={department.departmentId} departmentInfo={department}/>
+  );
 
   return (
     <section className="departments">
@@ -72,7 +63,7 @@ const DepartmentsSection = () => {
               offsetStep={offsetStep}
               loadingState={isLoading}
               loadMoreData={setMuseumDataState}
-              data={departments}
+              data={departmentsElems}
               noFutureDataToLoad={noFutureDepartmentsToLoad}
             />
         }

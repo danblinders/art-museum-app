@@ -1,6 +1,7 @@
-import { useEffect, useState } from 'react';
-import { useSearchParams } from 'react-router-dom';
+import { useSearchParams, useLocation } from 'react-router-dom';
 import { useMuseumData } from '../../../hooks/useMuseumData';
+import usePersistedData from '../../../hooks/usePersistedData';
+import useEffectAfterMount from '../../../hooks/useEffectAfterMount';
 import MuseumApi from '../../../service/MuseumApi';
 import DataList from '../../dataList/DataList';
 import ArtworkCard from '../../artworkCard/ArtworkCard';
@@ -10,7 +11,7 @@ import fallbackThumbnail from '../../../img/no-image.png';
 const offsetStep = 20;
 
 const SearchArtworksPage = () => {
-  const [artworks, setArtworks] = useState(null);
+  const [artworks, setArtworks] = usePersistedData( `search_${useLocation().key}`);
 
   const MuseumServiceApi = new MuseumApi();
 
@@ -26,7 +27,7 @@ const SearchArtworksPage = () => {
     setMuseumDataState
   } = useMuseumData(offsetStep, MuseumServiceApi.getArtworksWithFilters, term, filters);
 
-  useEffect(() => {
+  const modifyArtworksObjects = () => {
     if (dataToLoad) {
       const artworksPoromises = dataToLoad.map(async artworkId => {
         return await MuseumServiceApi.getArtwork(artworkId)
@@ -34,17 +35,23 @@ const SearchArtworksPage = () => {
             if (artwork.primaryImage.length === 0) {
               artwork.primaryImage = fallbackThumbnail;
             }
-            return <ArtworkCard key={artwork.objectID} artworkData={artwork}/>;
+            return artwork;
           });
       });
   
       Promise.all(artworksPoromises)
         .then(artworks => {
-          setMuseumDataState({isLoading: false});
           setArtworks(currentArtworks => currentArtworks ? [...currentArtworks, ...artworks] : artworks);
+          setMuseumDataState({isLoading: false});
         });
     }
-  }, [dataToLoad]);
+  };
+
+  useEffectAfterMount(modifyArtworksObjects, [dataToLoad]);
+
+  const artworksElems = artworks?.map(artwork =>
+    <ArtworkCard key={artwork.objectID} artworkData={artwork}/>
+  );
 
   return (
     <>
@@ -57,7 +64,7 @@ const SearchArtworksPage = () => {
             offsetStep={offsetStep}
             loadingState={isLoading}
             loadMoreData={setMuseumDataState}
-            data={artworks}
+            data={artworksElems}
             noFutureDataToLoad={noFutureArtworksToLoad}
           />
       }
