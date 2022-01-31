@@ -1,12 +1,12 @@
-import { useEffect } from 'react';
 import { useParams } from 'react-router-dom';
-import { useMuseumData } from '../../../hooks/useMuseumData';
+import useMuseumData from '../../../hooks/useMuseumData';
 import usePersistedData from '../../../hooks/usePersistedData';
 import useEffectAfterMount from '../../../hooks/useEffectAfterMount';
 import MuseumApi from '../../../service/MuseumApi';
 import DataList from '../../dataList/DataList';
 import ArtworkCard from '../../artworkCard/ArtworkCard';
 import Spinner from '../../spinner/Spinner';
+import ErrorMessage from '../../errorMessage/ErrorMessage';
 import fallbackThumbnail from '../../../img/no-image.png';
 
 const offsetStep = 20;
@@ -20,7 +20,7 @@ const DepartmentPage = () => {
 
   const {
     isLoading,
-    isError,
+    errorRes,
     dataToLoad,
     offset,
     noFutureDataToLoad : noFutureArtworksToLoad,
@@ -41,9 +41,12 @@ const DepartmentPage = () => {
   
       Promise.all(artworksPoromises)
         .then(artworks => {
-          setDepartmentCollection(currentCollection =>
-            currentCollection ? [...currentCollection, ...artworks] : artworks
-          );
+          setDepartmentCollection(currentCollection => {
+            const newArtworksCollection = currentCollection ? [...currentCollection, ...artworks] : artworks;
+            return newArtworksCollection.filter((item, id, arr) => {
+              return arr.findIndex(elem => elem.objectID === item.objectID) === id;
+            });
+          });
           setMuseumDataState({isLoading: false});
         });
     }
@@ -61,17 +64,20 @@ const DepartmentPage = () => {
       <div className="container">
         <div className="department__collection">
           {
-            isLoading && !departmentCollection ?
-              <Spinner/>
+            errorRes.status ?
+              <ErrorMessage text={errorRes.message}/>
               :
-              <DataList
-                offset={offset}
-                offsetStep={offsetStep}
-                loadingState={isLoading}
-                loadMoreData={setMuseumDataState}
-                data={departmentCollectionElems}
-                noFutureDataToLoad={noFutureArtworksToLoad}
-              />
+              isLoading && !departmentCollection ?
+                <Spinner/>
+                :
+                <DataList
+                  offset={offset}
+                  offsetStep={offsetStep}
+                  loadingState={isLoading}
+                  loadMoreData={setMuseumDataState}
+                  data={departmentCollectionElems}
+                  noFutureDataToLoad={noFutureArtworksToLoad}
+                />
           }
         </div>
       </div>

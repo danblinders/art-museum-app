@@ -1,10 +1,10 @@
-import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import usePersistedData from '../../hooks/usePersistedData';
 import { Skeleton } from '@mui/material';
 import './ArtworkCard.scss';
 
 const ArtworkCard = ({artworkData}) => {
-  const [isImageloaded, setIsImageLoaded] = useState(false);
+  const [isImageloaded, setIsImageLoaded] = usePersistedData(`artwork_${artworkData.objectID}_image`, false);
   const navigate = useNavigate();
 
   return (

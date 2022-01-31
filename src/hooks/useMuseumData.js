@@ -5,7 +5,7 @@ import usePersistedData from './usePersistedData';
 const useMuseumData = (offsetStep, fetchFunc, ...fetchFuncArgs) => {
   const [museumDataState, updateMuseumDataState] = usePersistedData(
     `museum_data_${useLocation().key}`,
-    {isLoading: true, isError: false, dataIds: null, offset: 0}
+    {isLoading: true, errorRes: {status: false, message: ''}, dataIds: null, offset: 0}
   );
 
   const setMuseumDataState = (newValue) => {
@@ -13,17 +13,19 @@ const useMuseumData = (offsetStep, fetchFunc, ...fetchFuncArgs) => {
   };
 
   const
-    {dataIds, isLoading, isError, offset} = museumDataState,
+    {dataIds, isLoading, errorRes, offset} = museumDataState,
     dataToLoad = useMemo(() => dataIds?.slice(offset, offset + offsetStep), [dataIds, offset, offsetStep]),
     noFutureDataToLoad = dataIds?.length - offset <= offsetStep ? true : false;
 
   useEffect(() => {
-    fetchFunc(...fetchFuncArgs)
-      .then(result => setMuseumDataState({dataIds: result}))
-      .catch(error => setMuseumDataState({isError: true, isLoading: false}));
+    if (!dataIds) {
+      fetchFunc(...fetchFuncArgs)
+        .then(result => setMuseumDataState({dataIds: result}))
+        .catch(e => setMuseumDataState({errorRes: {status: true, message: e.message}, isLoading: false}));
+    }
   }, []);
 
-  return {isLoading, offset, isError, dataToLoad, noFutureDataToLoad, setMuseumDataState};
+  return {isLoading, offset, errorRes, dataToLoad, noFutureDataToLoad, setMuseumDataState};
 };
 
-export { useMuseumData };
+export default useMuseumData;

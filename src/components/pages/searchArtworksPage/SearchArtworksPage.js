@@ -1,11 +1,12 @@
 import { useSearchParams, useLocation } from 'react-router-dom';
-import { useMuseumData } from '../../../hooks/useMuseumData';
+import useMuseumData from '../../../hooks/useMuseumData';
 import usePersistedData from '../../../hooks/usePersistedData';
 import useEffectAfterMount from '../../../hooks/useEffectAfterMount';
 import MuseumApi from '../../../service/MuseumApi';
 import DataList from '../../dataList/DataList';
 import ArtworkCard from '../../artworkCard/ArtworkCard';
 import Spinner from '../../spinner/Spinner';
+import ErrorMessage from '../../errorMessage/ErrorMessage';
 import fallbackThumbnail from '../../../img/no-image.png';
 
 const offsetStep = 20;
@@ -20,7 +21,7 @@ const SearchArtworksPage = () => {
 
   const {
     isLoading,
-    isError,
+    errorRes,
     dataToLoad,
     offset,
     noFutureDataToLoad : noFutureArtworksToLoad,
@@ -41,7 +42,12 @@ const SearchArtworksPage = () => {
   
       Promise.all(artworksPoromises)
         .then(artworks => {
-          setArtworks(currentArtworks => currentArtworks ? [...currentArtworks, ...artworks] : artworks);
+          setArtworks(currentArtworks => {
+            const newArtworksList = currentArtworks ? [...currentArtworks, ...artworks] : artworks;
+            return newArtworksList.filter((item, id, arr) => {
+              return arr.findIndex(elem => elem.objectID === item.objectID) === id;
+            });
+          });
           setMuseumDataState({isLoading: false});
         });
     }
@@ -56,17 +62,20 @@ const SearchArtworksPage = () => {
   return (
     <>
       {
-        isLoading && !artworks ?
-          <Spinner/>
+        errorRes.status ?
+          <ErrorMessage text={errorRes.message}/>
           :
-          <DataList
-            offset={offset}
-            offsetStep={offsetStep}
-            loadingState={isLoading}
-            loadMoreData={setMuseumDataState}
-            data={artworksElems}
-            noFutureDataToLoad={noFutureArtworksToLoad}
-          />
+          isLoading && !artworks ?
+            <Spinner/>
+            :
+            <DataList
+              offset={offset}
+              offsetStep={offsetStep}
+              loadingState={isLoading}
+              loadMoreData={setMuseumDataState}
+              data={artworksElems}
+              noFutureDataToLoad={noFutureArtworksToLoad}
+            />
       }
     </>
   );
