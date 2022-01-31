@@ -1,10 +1,11 @@
+import Promo from '../../promo/Promo';
 import DepartmentsSection from '../../departmentsSection/DepartmentsSection';
 import SearchForms from '../../searchForms/SearchForms';
 
 const HomePage = () => {
   return (
     <>
-      <h1>HomePage</h1>
+      <Promo/>
       <DepartmentsSection/>
       <SearchForms/>
     </>

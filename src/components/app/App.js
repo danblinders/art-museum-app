@@ -4,6 +4,7 @@ import HomePage from '../pages/homePage/HomePage';
 import DepartmentPage from '../pages/departmentPage/DepartmentPage';
 import SearchArtworksPage from '../pages/searchArtworksPage/SearchArtworksPage';
 import ArtworkPage from '../pages/artworkPage/ArtworkPage';
+import Footer from './footer/Footer';
 import './App.scss';
 
 function App() {
@@ -16,6 +17,7 @@ function App() {
         <Route path="/search/" element={<SearchArtworksPage/>}></Route>
         <Route path="/artworks/:artworkId" element={<ArtworkPage/>}></Route>
       </Routes>
+      <Footer/>
     </Router>
   );
 }
