@@ -2,25 +2,7 @@ import { useRef } from 'react';
 import { useFormik } from 'formik';
 import { useNavigate } from 'react-router-dom';
 import { Slider } from '@mui/material';
-import { createTheme } from '@mui/material/styles';
-import { ThemeProvider } from '@mui/private-theming';
 import './SearchForms.scss';
-
-const theme = createTheme({
-  overrides:{
-    MuiSlider: {
-      thumb: {
-        color: 'white'
-      },
-      track: {
-        color: 'white'
-      },
-      rail: {
-        color: 'white'
-      }
-    }
-  }
-});
 
 const SearchForms = () => {
   return (
@@ -107,24 +89,21 @@ const SearchFormByTitle = () => {
               {formYearRangeString(formik.values.dateBegin, formik.values.dateEnd)}
             </span>
           </span>
-          <ThemeProvider theme={theme}>
-            <Slider
-              ref={rangeSliderRef}
-              getAriaLabel={() => 'Artworks\' release date range'}
-              min={yearMin}
-              step={1}
-              max={yearMax}
-              color='primary'
-              defaultValue={[yearMin, yearMax]}
-              valueLabelDisplay="auto"
-              onChange={(e, dates) => {
-                formik.setFieldValue('dateBegin', dates[0]);
-                formik.setFieldValue('dateEnd', dates[1]);
+          <Slider
+            ref={rangeSliderRef}
+            getAriaLabel={() => 'Artworks\' release date range'}
+            min={yearMin}
+            step={1}
+            max={yearMax}
+            defaultValue={[yearMin, yearMax]}
+            valueLabelDisplay="auto"
+            onChange={(e, dates) => {
+              formik.setFieldValue('dateBegin', dates[0]);
+              formik.setFieldValue('dateEnd', dates[1]);
 
-                rangeSliderLabelRef.current.textContent = formYearRangeString(...dates);
-              }}
-            />
-          </ThemeProvider>
+              rangeSliderLabelRef.current.textContent = formYearRangeString(...dates);
+            }}
+          />
         </div>
         <label className="title-form__field">
           <span className="title-form__label">Geolocation</span>
