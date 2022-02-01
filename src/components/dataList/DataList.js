@@ -15,28 +15,26 @@ const DataList = ({
   
   return (
     <ErrorBoundary>
-      <div className="data__wrapper">
-        {
-          data.length > 0 ?
-            <div className="data__list">{data}</div>
-            :
-            'Nothing was found'
-        }
-        {
-          noFutureDataToLoad ?
-            null
-            :
-            <button
-              ref={buttonRef}
-              disabled={loadingState ? true : false}
-              className={`data__load-btn btn ${!data ? 'btn_hidden' : ''}`}
-              onClick={() => {
-                loadMoreData({isLoading: true, offset: offset + offsetStep});
-              }}>
-              Load More
-            </button>
-        }
-      </div>
+      {
+        data.length > 0 ?
+          <div className="data-list">{data}</div>
+          :
+          'Nothing was found'
+      }
+      {
+        noFutureDataToLoad ?
+          null
+          :
+          <button
+            ref={buttonRef}
+            disabled={loadingState ? true : false}
+            className={`data-list__load-btn btn ${!data ? 'btn_hidden' : ''}`}
+            onClick={() => {
+              loadMoreData({isLoading: true, offset: offset + offsetStep});
+            }}>
+            Load More
+          </button>
+      }
     </ErrorBoundary>
   );;
 };

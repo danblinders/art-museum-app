@@ -2,15 +2,36 @@ import { useRef } from 'react';
 import { useFormik } from 'formik';
 import { useNavigate } from 'react-router-dom';
 import { Slider } from '@mui/material';
+import { createTheme } from '@mui/material/styles';
+import { ThemeProvider } from '@mui/private-theming';
 import './SearchForms.scss';
+
+const theme = createTheme({
+  overrides:{
+    MuiSlider: {
+      thumb: {
+        color: 'white'
+      },
+      track: {
+        color: 'white'
+      },
+      rail: {
+        color: 'white'
+      }
+    }
+  }
+});
 
 const SearchForms = () => {
   return (
     <section className="search-forms">
       <div className="container">
-        <div className="search-forms__wrapper">
-          <SearchFormByTitle/>
-          <SearchFormByArtist/>
+        <div className="search-forms__content">
+          <h2 className="subtitle search-forms__subtitle">Search for Artworks!</h2>
+          <div className="search-forms__wrapper">
+            <SearchFormByTitle/>
+            <SearchFormByArtist/>
+          </div>
         </div>
       </div>
     </section>
@@ -59,7 +80,7 @@ const SearchFormByTitle = () => {
 
   return (
     <div className="title-form">
-      <h3 className="label-cta-text title-form__name">Search for Artwork!</h3>
+      <h3 className="label-cta-text title-form__cta-text">Find specific Artwork!</h3>
       <form action="#" method="get" className="title-form__wrapper" onSubmit={formik.handleSubmit}>
         <label className="title-form__field">
           <span className="title-form__label">Title</span>
@@ -86,21 +107,24 @@ const SearchFormByTitle = () => {
               {formYearRangeString(formik.values.dateBegin, formik.values.dateEnd)}
             </span>
           </span>
-          <Slider
-            ref={rangeSliderRef}
-            getAriaLabel={() => 'Artworks\' release date range'}
-            min={yearMin}
-            step={1}
-            max={yearMax}
-            defaultValue={[yearMin, yearMax]}
-            valueLabelDisplay="auto"
-            onChange={(e, dates) => {
-              formik.setFieldValue('dateBegin', dates[0]);
-              formik.setFieldValue('dateEnd', dates[1]);
+          <ThemeProvider theme={theme}>
+            <Slider
+              ref={rangeSliderRef}
+              getAriaLabel={() => 'Artworks\' release date range'}
+              min={yearMin}
+              step={1}
+              max={yearMax}
+              color='primary'
+              defaultValue={[yearMin, yearMax]}
+              valueLabelDisplay="auto"
+              onChange={(e, dates) => {
+                formik.setFieldValue('dateBegin', dates[0]);
+                formik.setFieldValue('dateEnd', dates[1]);
 
-              rangeSliderLabelRef.current.textContent = formYearRangeString(...dates);
-            }}
-          />
+                rangeSliderLabelRef.current.textContent = formYearRangeString(...dates);
+              }}
+            />
+          </ThemeProvider>
         </div>
         <label className="title-form__field">
           <span className="title-form__label">Geolocation</span>
@@ -112,7 +136,7 @@ const SearchFormByTitle = () => {
             onChange={formik.handleChange}/>
           {formik.errors.geoLocation && formik.touched.geoLocation && formik.errors.geoLocation}
         </label>
-        <button type="submit" className="title-form__submit" disabled={formik.isSubmitting}>Submit</button>
+        <button type="submit" className="btn title-form__submit" disabled={formik.isSubmitting}>Submit</button>
       </form>
     </div>
   );
@@ -139,11 +163,18 @@ const SearchFormByArtist = () => {
 
   return (
     <div className="artist-form">
-      <h3 className="label-cta-text artist-form__name">Search for Artist's collection!</h3>
+      <h3 className="label-cta-text artist-form__cta-text">Search for Artist's collection!</h3>
       <form action="#" method="get" className="artist-form__wrapper" onSubmit={formik.handleSubmit}>
-        <input type="text" className="artist-form__input" name="term" value={formik.values.term} onChange={formik.handleChange}/>
-        {formik.errors.term && formik.touched.term && formik.errors.term}
-        <button type="submit" className="artist-form__submit" disabled={formik.isSubmitting}>Submit</button>
+        <div className="artist-form__field">
+          <span className="title-form__label">Artist's name</span>
+          <input
+            type="text"
+            className="artist-form__input"
+            name="term" value={formik.values.term}
+            onChange={formik.handleChange}/>
+          {formik.errors.term && formik.touched.term && formik.errors.term}
+        </div>
+        <button type="submit" className="btn artist-form__submit" disabled={formik.isSubmitting}>Submit</button>
       </form>
     </div>
   );

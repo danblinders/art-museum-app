@@ -1,0 +1,22 @@
+.data-list {
+  padding: 4rem;
+  display: grid;
+  grid-template-columns: repeat(auto-fit,  minmax(300px, 1fr));
+  gap: 3rem;
+
+  &__load-btn {
+    margin: 0 auto;
+    padding: 1.5rem 2rem;
+    border-radius: 2%;
+    background: #000;
+    font-size: 2rem;
+    font-weight: 700;
+    color: rgb(197, 6, 6);
+  }
+}
+
+@media (max-width: 768px) {
+  .data-list {
+    grid-template-columns: 1fr;
+  }
+}

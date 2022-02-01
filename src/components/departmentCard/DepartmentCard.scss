@@ -1,9 +1,7 @@
 .departments-card {
-  flex: 1 1 100%;
-  padding: 2%;
-  max-width: 20%;
-  min-width: 25rem;
-  min-height: 35rem;
+  padding: 5%;
+  max-width: 100%;
+  min-height: 45rem;
   border-radius: 5%;
   display: flex;
   justify-content: center;
@@ -17,5 +15,11 @@
     font-size: 3rem;
     font-weight: 700;
     text-align: center;
+  }
+}
+
+@media (max-width: 576px) {
+  .departments-card {
+    min-height: 30rem;
   }
 }

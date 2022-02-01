@@ -1,11 +1,11 @@
+import './App.scss';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Header from '../header/Header';
 import HomePage from '../pages/homePage/HomePage';
 import DepartmentPage from '../pages/departmentPage/DepartmentPage';
 import SearchArtworksPage from '../pages/searchArtworksPage/SearchArtworksPage';
 import ArtworkPage from '../pages/artworkPage/ArtworkPage';
-import Footer from './footer/Footer';
-import './App.scss';
+import Footer from '../footer/Footer';
 
 function App() {
   return (

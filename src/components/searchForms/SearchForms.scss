@@ -1,15 +1,87 @@
 .search-forms {
+  padding: 5rem 0 10rem;
+
+  &__subtitle {
+    margin-bottom: 5rem;
+    text-align: center;
+  }
+
   &__wrapper {
-    padding: 10rem 0 20rem;
     display: flex;
+    flex-wrap: wrap;
     justify-content: space-between;
+    gap: 2rem;
   }
 }
 
-.title-form {
+.title-form, .artist-form {
+  padding: 3rem;
+  flex-basis: 45%;
+  max-width: 700px;
+  background: rgb(133, 0, 0);
+  color: #fff;
+  border-radius: 1.2rem;
+
   &__wrapper {
     display: flex;
     flex-direction: column;
     gap: 2rem;
   }
+  &__cta-text {
+    margin-bottom: 3rem;
+    text-align: center;
+  }
+
+  &__field, &__range-field{
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  &__label, &__range-label {
+    font-size: 2rem;
+    font-weight: 500;
+  }
+
+  &__range-label span {
+    font-weight: 700;
+  }
+
+  &__input {
+    padding: 1rem;
+    border-radius: 5px;
+    font-size: 1.8rem;
+    color: rgb(41, 41, 41);
+    border: 1px solid currentColor;
+  }
+
+  &__submit {
+    margin: 1rem auto 0;
+    padding: 1.5rem 2rem;
+    border-radius: 0.5rem;
+    border: 2px solid #fff;
+    font-size: 2rem;
+    font-weight: 700;
+    color:#fff;
+  }
+}
+
+.artist-form {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+@media (max-width: 1024px) {
+  .search-forms {
+    &__wrapper {
+      justify-content: center;
+      gap: 3rem;
+    }
+  }
+
+  .title-form, .artist-form {
+    flex-basis: 100%;
+  }
+  
 }

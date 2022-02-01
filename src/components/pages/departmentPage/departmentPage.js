@@ -8,6 +8,7 @@ import ArtworkCard from '../../artworkCard/ArtworkCard';
 import Spinner from '../../spinner/Spinner';
 import ErrorMessage from '../../errorMessage/ErrorMessage';
 import fallbackThumbnail from '../../../img/no-image.png';
+import './DepartmentPage.scss';
 
 const offsetStep = 20;
 
@@ -60,25 +61,26 @@ const DepartmentPage = () => {
 
   return (
     <>
-      <h1>Department {departmentId}</h1>
-      <div className="container">
-        <div className="department__collection">
-          {
-            errorRes.status ?
-              <ErrorMessage text={errorRes.message}/>
-              :
-              isLoading && !departmentCollection ?
-                <Spinner/>
+      <div className="department">
+        <div className="container">
+          <div className="department__collection">
+            {
+              errorRes.status ?
+                <ErrorMessage text={errorRes.message}/>
                 :
-                <DataList
-                  offset={offset}
-                  offsetStep={offsetStep}
-                  loadingState={isLoading}
-                  loadMoreData={setMuseumDataState}
-                  data={departmentCollectionElems}
-                  noFutureDataToLoad={noFutureArtworksToLoad}
-                />
-          }
+                isLoading && !departmentCollection ?
+                  <Spinner/>
+                  :
+                  <DataList
+                    offset={offset}
+                    offsetStep={offsetStep}
+                    loadingState={isLoading}
+                    loadMoreData={setMuseumDataState}
+                    data={departmentCollectionElems}
+                    noFutureDataToLoad={noFutureArtworksToLoad}
+                  />
+            }
+          </div>
         </div>
       </div>
     </>

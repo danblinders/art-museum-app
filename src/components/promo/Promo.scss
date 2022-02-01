@@ -1,0 +1,64 @@
+.promo {
+  max-height: 85%;
+  &__content {
+    padding: 8rem 0;
+    display: flex;
+    justify-content: space-between;
+    gap: 2rem;
+  }
+
+  &__info {
+    width: 45%;
+    padding-top: 4rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+
+  &__description {
+    padding-right: 3rem;
+    font-size: 2rem;
+    line-height: 1.3;
+  }
+
+  &__link {
+    padding: 1.5rem 2rem;
+    border-radius: 2%;
+    background: #000;
+    font-size: 2rem;
+    font-weight: 700;
+    color: rgb(197, 6, 6)
+  }
+
+  &__hero {
+    width: 45%;
+    display: flex;
+    justify-content: center;
+    overflow: hidden;
+
+    &-image {
+      max-width: 100%;
+      object-fit: cover;
+      border-radius: 2%;
+    }
+  }
+}
+
+@media (max-width: 1024px) {
+  .promo {
+    &__content {
+      padding: 5rem 0;
+      flex-direction: column;
+      gap: 2rem;
+    }
+    &__info {
+      padding-top: 0;
+      width: 100%;
+      text-align: center;
+    }
+
+    &__hero {
+      width: 100%;
+    }
+  }
+}

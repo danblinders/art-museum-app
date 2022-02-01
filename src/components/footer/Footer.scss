@@ -1,0 +1,21 @@
+.footer {
+  background: #000;
+
+  &__content {
+    padding: 3rem;
+    min-height: 15vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  &__copyright {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1.5rem;
+    font-size: 2rem;
+    font-weight: 700;
+    color: #fff;
+  }
+}

@@ -9,7 +9,7 @@ import DepartmentCard from '../departmentCard/DepartmentCard';
 import ErrorMessage from '../errorMessage/ErrorMessage';
 import './DepartmentsSection.scss';
 
-const offsetStep = 6;
+const offsetStep = 4;
 
 const DepartmentsSection = () => {
   const [departments, setDepartments] = usePersistedData('departments');
@@ -59,23 +59,27 @@ const DepartmentsSection = () => {
   return (
     <section className="departments">
       <div className="container">
-        <h2 className="subtitle departments__subtitle">Our departments</h2>
-        {
-          errorRes.status ?
-            <ErrorMessage text={errorRes.message}/>
-            :
-            isLoading && !departments ?
-              <Spinner/>
-              :
-              <DataList
-                offset={offset}
-                offsetStep={offsetStep}
-                loadingState={isLoading}
-                loadMoreData={setMuseumDataState}
-                data={departmentsElems}
-                noFutureDataToLoad={noFutureDepartmentsToLoad}
-              />
-        }
+        <div className="departments__content">
+          <h2 className="subtitle departments__subtitle">Our departments</h2>
+          <div className="departments__list">
+            {
+              errorRes.status ?
+                <ErrorMessage text={errorRes.message}/>
+                :
+                isLoading && !departments ?
+                  <Spinner/>
+                  :
+                  <DataList
+                    offset={offset}
+                    offsetStep={offsetStep}
+                    loadingState={isLoading}
+                    loadMoreData={setMuseumDataState}
+                    data={departmentsElems}
+                    noFutureDataToLoad={noFutureDepartmentsToLoad}
+                  />
+            }
+          </div>
+        </div>
       </div>
     </section>
   );

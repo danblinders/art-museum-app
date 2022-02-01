@@ -10,7 +10,6 @@ const ArtworkCard = ({artworkData}) => {
   return (
     <div className="artwork-card" onClick={() => navigate(`/artworks/${artworkData.objectID}`)}>
       <div className="artwork-card__wrapper">
-        <h3 className="artwork-card__title">{artworkData.title}</h3>
         <div className="artwork-card__showcase">
           {isImageloaded ?
             null
@@ -24,6 +23,7 @@ const ArtworkCard = ({artworkData}) => {
             className="artwork-card__image"
             onLoad={() => setIsImageLoaded(true)}/>
         </div>
+        <h3 className="label-cta-text artwork-card__subtitle">{artworkData.title}</h3>
       </div>
     </div>
   );

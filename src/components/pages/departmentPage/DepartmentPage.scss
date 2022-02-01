@@ -1,0 +1,11 @@
+.department {
+  width: 100%;
+  display: flex;
+  padding: 10rem 0;
+}
+
+@media (max-width: 1024px) {
+  .department {
+    padding: 5rem 0;
+  }
+}

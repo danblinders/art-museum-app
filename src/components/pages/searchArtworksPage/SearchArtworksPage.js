@@ -8,6 +8,7 @@ import ArtworkCard from '../../artworkCard/ArtworkCard';
 import Spinner from '../../spinner/Spinner';
 import ErrorMessage from '../../errorMessage/ErrorMessage';
 import fallbackThumbnail from '../../../img/no-image.png';
+import './SearchArtworksPage.scss';
 
 const offsetStep = 20;
 
@@ -61,22 +62,28 @@ const SearchArtworksPage = () => {
 
   return (
     <>
-      {
-        errorRes.status ?
-          <ErrorMessage text={errorRes.message}/>
-          :
-          isLoading && !artworks ?
-            <Spinner/>
-            :
-            <DataList
-              offset={offset}
-              offsetStep={offsetStep}
-              loadingState={isLoading}
-              loadMoreData={setMuseumDataState}
-              data={artworksElems}
-              noFutureDataToLoad={noFutureArtworksToLoad}
-            />
-      }
+      <div className="search-list">
+        <div className="container">
+          <div className="search-list__content">
+            {
+              errorRes.status ?
+                <ErrorMessage text={errorRes.message}/>
+                :
+                isLoading && !artworks ?
+                  <Spinner/>
+                  :
+                  <DataList
+                    offset={offset}
+                    offsetStep={offsetStep}
+                    loadingState={isLoading}
+                    loadMoreData={setMuseumDataState}
+                    data={artworksElems}
+                    noFutureDataToLoad={noFutureArtworksToLoad}
+                  />
+            }
+          </div>
+        </div>
+      </div>
     </>
   );
 };
